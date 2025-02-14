@@ -14,7 +14,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-<dependencies>
+<dependencies>   
+    <dependency>
+        <groupId>io.github.ollama4j</groupId>
+        <artifactId>ollama4j</artifactId>
+        <version>1.0.93</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>2.0.9</version> <!--Replace with appropriate version-->
+    </dependency>
+    
     <!-- Selenium WebDriver -->
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
@@ -116,7 +127,31 @@
         <artifactId>logback-classic</artifactId>
         <version>1.5.6</version>
         <scope>test</scope>
-    </dependency>   
+    </dependency>
+    <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>0.26.0</version>
+    </dependency>
+    <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>1.36.0</version>
+        </dependency>
+
+        <!-- Allure Reports -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>2.23.0</version>
+        </dependency>
+
+        <!-- Email alerts -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>               
 </dependencies>
 <build>
     <plugins>
