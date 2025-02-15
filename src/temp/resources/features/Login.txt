@@ -1,25 +1,13 @@
-gherkin
-Feature: Login Functionality for OrangeHRM website
-  As a user, I want to be able to log in to the OrangeHRM website so that I can access its features
+Feature: Login Functionality on OrangeHRM Website
 
-  Scenario Outline: Successful login with valid credentials
-    Given I am on the login page of the "<url>"
-    When I enter "username" as "<username>" and "password" as "<password>"
-    And I click 'Sign In' button
-    Then I should be logged in successfully
+  Scenario: Successful login to the dashboard
+    Given I am on the login page
+    When I enter "admin" as username and "admin123" as password
+    And I click the login button
+    Then I should be redirected to the dashboard
 
-    Examples:
-      | url                | https://opensource-demo.orangehrmlive.com/web/index.php/auth/login |
-      | username           | admin                                                              |
-      | password           | admin123                                                            |
-
-  Scenario Outline: Unsuccessful login with invalid credentials
-    Given I am on the login page of the "<url>"
-    When I enter "username" as "<invalidUsername>" and "password" as "<invalidPassword>"
-    And I click 'Sign In' button
-    Then I should not be able to log in successfully
-
-    Examples:
-      | url                | https://opensource-demo.orangehrmlive.com/web/index.php/auth/login |
-      | invalidUsername    | admin                                                              |
-      | invalidPassword    | incorrectPassword                                                |
+  Scenario: Invalid login with incorrect credentials
+    Given I am on the login page
+    When I enter invalid username and invalid password
+    And I click the login button
+    Then an error message should appear indicating invalid credentials

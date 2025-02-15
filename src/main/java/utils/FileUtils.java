@@ -2,7 +2,10 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,5 +49,19 @@ public class FileUtils {
             }
         }
         return content.toString();
+    }
+
+    public static String loadConfig() {
+        Properties properties = new Properties();
+        String basePromptDirectory = "";
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/config.properties"))) {
+            properties.load(input);
+            basePromptDirectory = properties.getProperty("prompt.base.directory");
+            System.out.println("Loaded prompt directory: " + basePromptDirectory);
+        } catch (IOException e) {
+            System.err.println("Failed to load config file. Using default path.");
+            basePromptDirectory = "src/main/resources/prompt";
+        }
+        return basePromptDirectory;
     }
 }

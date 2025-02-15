@@ -1,7 +1,8 @@
-Generate a Cucumber BDD feature file only for login functionality for the website:
+Write a Cucumber BDD feature file for the login functionality of the website:
 https://opensource-demo.orangehrmlive.com/web/index.php/auth/login.
-The test should:
-- Open the login page.
-- Enter valid credentials (admin/admin123).
-- Verify successful login.
-- Handle invalid credentials case.
+
+The feature file should include:
+
+A successful login scenario with username admin and password admin123, verifying redirection to the dashboard.
+An invalid login scenario where incorrect credentials are entered, verifying an error message appears.
+Use standard Gherkin syntax with Feature, Scenario, Given, When, And, and Then steps. Do not include explanations, implementation details, or any text outside the feature file itself.
