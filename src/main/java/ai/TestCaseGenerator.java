@@ -27,14 +27,41 @@ public class TestCaseGenerator {
         loadConfig();
     }
 
-    public static void main(String[] args) {
-        try {
-            generateFeatureFile(basePromptDirectory + "/feature_prompt.txt", "src/temp/resources/features/Login.feature");
-        } catch (OllamaBaseException | IOException | InterruptedException e) {
-            e.printStackTrace();
+    public static String replaceExtension(String filePath, String newExtension) {
+        File file = new File(filePath);
+        String fileName = file.getName();
+        
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex != -1) {
+            fileName = fileName.substring(0, lastDotIndex); // Remove old extension
         }
+        
+        return file.getParent() != null 
+            ? file.getParent() + File.separator + fileName + "." + newExtension 
+            : fileName + "." + newExtension;
+    }
+
+    public static String toCamelCase(String str) {
+        // Convert to lowercase and split by space, underscore, or hyphen
+        String[] words = str.toLowerCase().split("[ _-]+"); 
+        
+        if (words.length == 0) return "";
+                
+        StringBuilder camelCase = new StringBuilder(); // Keep the first word lowercase
+        for (int i = 0; i < words.length; i++) {
+            camelCase.append(Character.toUpperCase(words[i].charAt(0)))
+                     .append(words[i].substring(1));
+        }
+
+        return camelCase.toString();
+    }
+
+    public static void main(String[] args) {
+       
         try {
-            generateStepDefinitions(basePromptDirectory + "/step_definition_prompt.txt", "src/temp/java/stepDefinitions/LoginSteps.java");
+            genFetureFiles();
+            genStepFiles();
+            // generateStepDefinitions(basePromptDirectory + "/step_definition_prompt.txt", "src/temp/java/stepDefinitions/LoginSteps.java");
         } catch (OllamaBaseException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -52,6 +79,52 @@ public class TestCaseGenerator {
         }
     }
 
+    public static void genStepFiles() throws OllamaBaseException, IOException, InterruptedException{
+        String step_file = basePromptDirectory + "/steps/";            
+        File folder = new File(step_file);
+         // List all files in the directory
+        File[] files = folder.listFiles();
+
+        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
+        ollamaAPI.setRequestTimeoutSeconds(600);
+       
+        if (files != null) {
+            for (File file : files) {
+                // Check if it is a file (not a directory)
+                if (file.isFile()) {
+                    System.out.println("------------------------------------------------------------------------ Processing file: " + file.getName());
+                    String  stepOutputFile = "src/temp/resources/steps/" + replaceExtension(toCamelCase(file.getName()), "java");                        
+                    generateStepDefinitions(step_file + file.getName(), stepOutputFile);
+                }
+            }
+        } else {
+            System.out.println("Folder is empty or does not exist.");
+        }        
+    }
+    public static void genFetureFiles() throws OllamaBaseException, IOException, InterruptedException{
+        String feature_file = basePromptDirectory + "/features/";            
+        File folder = new File(feature_file);
+         // List all files in the directory
+        File[] files = folder.listFiles();
+
+        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
+        ollamaAPI.setRequestTimeoutSeconds(600);
+
+           
+        if (files != null) {
+            for (File file : files) {
+                // Check if it is a file (not a directory)
+                if (file.isFile()) {
+                    System.out.println("Processing file: " + file.getName());
+                    String  featureOutputFile = "src/temp/resources/features/" + toCamelCase(file.getName());                        
+                    generateFeatureFile(feature_file + file.getName(), featureOutputFile);
+                }
+            }
+        } else {
+            System.out.println("Folder is empty or does not exist.");
+        }        
+    }
+
     public static void generateFeatureFile(String promptFilePath, String outputFilePath) 
             throws OllamaBaseException, IOException, InterruptedException {
         String prompt = readFromFile(promptFilePath);
@@ -62,7 +135,7 @@ public class TestCaseGenerator {
 
         OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
         ollamaAPI.setRequestTimeoutSeconds(60);
-
+        
         Options options = new OptionsBuilder().build();
         OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
         saveToFile(outputFilePath, response.getResponse());

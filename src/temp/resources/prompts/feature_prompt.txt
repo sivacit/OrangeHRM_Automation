@@ -1,7 +1,0 @@
-Generate a Cucumber BDD feature file for login functionality for the website:
-https://opensource-demo.orangehrmlive.com/web/index.php/auth/login.
-The test should:
-- Open the login page.
-- Enter valid credentials (admin/admin123).
-- Verify successful login.
-- Handle invalid credentials case.
