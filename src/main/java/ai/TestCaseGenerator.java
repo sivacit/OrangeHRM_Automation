@@ -5,81 +5,93 @@ import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.OptionsBuilder;
-import io.github.ollama4j.utils.PromptBuilder;
 
 import java.io.File;
+import java.io.*;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+
 
 public class TestCaseGenerator {
     private static final String OLLAMA_HOST = "http://localhost:11434/";
     private static final String MODEL = "mistral"; // Use 'gemma' if needed
+    private static String basePromptDirectory;
+
+    static {
+        loadConfig();
+    }
 
     public static void main(String[] args) {
         try {
-			generateFeatureFile();
-		} catch (OllamaBaseException | IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            generateFeatureFile(basePromptDirectory + "/feature_prompt.txt", "src/temp/resources/features/Login.feature");
+        } catch (OllamaBaseException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
         try {
-			generateStepDefinitions();
-		} catch (OllamaBaseException | IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            generateStepDefinitions(basePromptDirectory + "/step_definition_prompt.txt", "src/temp/java/stepDefinitions/LoginSteps.java");
+        } catch (OllamaBaseException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void generateFeatureFile() throws OllamaBaseException, IOException, InterruptedException {
+    private static void loadConfig() {
+        Properties properties = new Properties();
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/config.properties"))) {
+            properties.load(input);
+            basePromptDirectory = properties.getProperty("prompt.base.directory");
+            System.out.println("Loaded prompt directory: " + basePromptDirectory);
+        } catch (IOException e) {
+            System.err.println("Failed to load config file. Using default path.");
+            basePromptDirectory = "src/main/resources/prompt";
+        }
+    }
+
+    public static void generateFeatureFile(String promptFilePath, String outputFilePath) 
+            throws OllamaBaseException, IOException, InterruptedException {
+        String prompt = readFromFile(promptFilePath);
+        if (prompt == null || prompt.isEmpty()) {
+            System.err.println("Feature prompt file is empty or missing.");
+            return;
+        }
+
         OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
         ollamaAPI.setRequestTimeoutSeconds(60);
 
-        String prompt = new PromptBuilder()
-                .addLine("Generate a Cucumber BDD feature file for login functionality for the website:")
-                .addLine("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login.")
-                .addLine("The test should:")
-                .addLine("- Open the login page.")
-                .addLine("- Enter valid credentials (admin/admin123).")
-                .addLine("- Verify successful login.")
-                .addLine("- Handle invalid credentials case.")
-                .build();
-
         Options options = new OptionsBuilder().build();
-
         OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
-        String generatedFeature = response.getResponse();
-
-        saveToFile("src/temp/resources/features/Login.feature", generatedFeature);
+        saveToFile(outputFilePath, response.getResponse());
     }
 
-    public static void generateStepDefinitions() throws OllamaBaseException, IOException, InterruptedException {
+    public static void generateStepDefinitions(String promptFilePath, String outputFilePath) 
+            throws OllamaBaseException, IOException, InterruptedException {
+        String prompt = readFromFile(promptFilePath);
+        if (prompt == null || prompt.isEmpty()) {
+            System.err.println("Step definition prompt file is empty or missing.");
+            return;
+        }
+
         OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
         ollamaAPI.setRequestTimeoutSeconds(60);
 
-        String prompt = new PromptBuilder()
-                .addLine("Generate Java step definitions for the following Cucumber feature file:")
-                .addLine("Feature: Login functionality")
-                .addLine("Scenario: Successful login")
-                .addLine("  Given I open the OrangeHRM login page")
-                .addLine("  When I enter username \"Admin\"")
-                .addLine("  And I enter password \"admin123\"")
-                .addLine("  And I click on the login button")
-                .addLine("  Then I should be redirected to the dashboard")
-                .addLine("")
-                .addLine("Scenario: Invalid login")
-                .addLine("  Given I open the OrangeHRM login page")
-                .addLine("  When I enter an invalid username \"wrongUser\"")
-                .addLine("  And I enter an invalid password \"wrongPass\"")
-                .addLine("  And I click on the login button")
-                .addLine("  Then I should see an error message \"Invalid credentials\"")
-                .build();
-
         Options options = new OptionsBuilder().build();
-
         OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
-        String generatedStepDefs = response.getResponse();
+        saveToFile(outputFilePath, response.getResponse());
+    }
 
-        saveToFile("src/temp/java/stepDefinitions/LoginSteps.java", generatedStepDefs);
+    private static String readFromFile(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + filePath);
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static void saveToFile(String filePath, String content) {
