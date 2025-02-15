@@ -7,10 +7,7 @@ import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.OptionsBuilder;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.nio.file.Files;
 import utils.FileUtils;
 
 public class TestCaseGenerator {
@@ -46,7 +43,7 @@ public class TestCaseGenerator {
                     System.out.println("Processing file: " + file.getName());
                     String  featureOutputFile = "src/temp/resources/features/" + FileUtils.toCamelCase(file.getName());                        
                     String  stepOutputFile = "src/temp/java/steps/" + FileUtils.replaceExtension(FileUtils.toCamelCase(file.getName()), "java");       
-                    String featurePrompt = FileUtils.readFromFile(feature_file + file.getName());
+                        String featurePrompt = FileUtils.readFromFile(feature_file + file.getName());
                     generatePromptResponse(ollamaAPI, featurePrompt, featureOutputFile);
                     
                     // Generating Step Definition Java file

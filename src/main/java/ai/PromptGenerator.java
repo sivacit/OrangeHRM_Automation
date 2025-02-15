@@ -16,7 +16,9 @@ public class PromptGenerator {
         sb.append("Use TestNG for assertions.\n");
         sb.append("Define a method to open the login page, input credentials, click the login button, and verify the login status.\n");
         sb.append("Handle invalid login cases with proper validation of the error message.\n");
-        sb.append("Do not include explanations or setup instructions, just the Java code.");        
+        sb.append("Do not include explanations or setup instructions, just the Java code.");   
+        sb.append("Do not include any notes or comments.");   
+
         String result = sb.toString();        
         return result;        
     }
