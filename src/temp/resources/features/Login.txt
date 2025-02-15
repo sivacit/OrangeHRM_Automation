@@ -1,0 +1,25 @@
+feature
+    Title: Login functionality for OrangeHRM Demo website
+
+    Scenario Outline: Successful Login with valid credentials
+      Given I navigate to the OrangeHRM login page "<url>"
+      When I enter valid username "<username>" and password "<password>"
+      And I click 'Sign In' button
+      Then I should be redirected to the OrangeHRM dashboard
+      Examples:
+        | url                     | https://opensource-demo.orangehrmlive.com/web/index.php/auth/login  |
+        | username               | admin                                                             |
+        | password               | admin123                                                          |
+
+    Scenario Outline: Invalid Login with invalid credentials
+      Given I navigate to the OrangeHRM login page "<url>"
+      When I enter invalid username "<username>" and password "<password>"
+      And I click 'Sign In' button
+      Then I should see an error message "Invalid Login"
+      Examples:
+        | url                     | https://opensource-demo.orangehrmlive.com/web/index.php/auth/login  |
+        | username               | invalid_user                                                       |
+        | password               | invalid_password                                                  |
+    
+
+In this example, I've created two scenarios for the login functionality: one for a successful login with valid credentials and another for an invalid login case. The Given step uses a placeholder "<url>" to represent the login page URL which can be replaced with the actual URL of your application. The Examples section provides the expected usernames and passwords for each scenario. You'll need to use a tool like Cucumber or Behat to execute these steps against your OrangeHRM web application.
