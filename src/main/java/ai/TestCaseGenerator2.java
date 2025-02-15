@@ -6,46 +6,44 @@ import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.OptionsBuilder;
 import io.github.ollama4j.utils.PromptBuilder;
+import utils.ConfigReader;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class TestCaseGenerator {
+public class TestCaseGenerator2 {
     private static final String OLLAMA_HOST = "http://localhost:11434/";
     private static final String MODEL = "mistral"; // Use 'gemma' if needed
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {        
         try {
-			generateFeatureFile();
+        	generateFeatureFile();
+        	generateStepDefinitions();
+			 generatePageObjectModel();
 		} catch (OllamaBaseException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        try {
-			generateStepDefinitions();
-		} catch (OllamaBaseException | IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+       
     }
 
     public static void generateFeatureFile() throws OllamaBaseException, IOException, InterruptedException {
         OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
         ollamaAPI.setRequestTimeoutSeconds(60);
 
+        String baseUrl = ConfigReader.get("base.url");
+
         String prompt = new PromptBuilder()
-                .addLine("Generate a Cucumber BDD feature file for login functionality for the website:")
-                .addLine("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login.")
-                .addLine("The test should:")
+                .addLine("Generate a Cucumber BDD feature file for login functionality.")
+                .addLine("Base URL: " + baseUrl)
+                .addLine("Test Cases:")
                 .addLine("- Open the login page.")
-                .addLine("- Enter valid credentials (admin/admin123).")
-                .addLine("- Verify successful login.")
+                .addLine("- Enter valid credentials and verify successful login.")
                 .addLine("- Handle invalid credentials case.")
                 .build();
 
         Options options = new OptionsBuilder().build();
-
         OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
         String generatedFeature = response.getResponse();
 
@@ -56,37 +54,40 @@ public class TestCaseGenerator {
         OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
         ollamaAPI.setRequestTimeoutSeconds(60);
 
+        String username = ConfigReader.get("login.username");
+        String password = ConfigReader.get("login.password");
+
         String prompt = new PromptBuilder()
-                .addLine("Generate Java step definitions for the following Cucumber feature file:")
-                .addLine("Feature: Login functionality")
-                .addLine("Scenario: Successful login")
-                .addLine("  Given I open the OrangeHRM login page")
-                .addLine("  When I enter username \"Admin\"")
-                .addLine("  And I enter password \"admin123\"")
-                .addLine("  And I click on the login button")
-                .addLine("  Then I should be redirected to the dashboard")
-                .addLine("")
-                .addLine("Scenario: Invalid login")
-                .addLine("  Given I open the OrangeHRM login page")
-                .addLine("  When I enter an invalid username \"wrongUser\"")
-                .addLine("  And I enter an invalid password \"wrongPass\"")
-                .addLine("  And I click on the login button")
-                .addLine("  Then I should see an error message \"Invalid credentials\"")
+                .addLine("Generate Java step definitions for the following Cucumber feature file.")
+                .addLine("Use these credentials:")
+                .addLine("Username: " + username)
+                .addLine("Password: " + password)
                 .build();
 
         Options options = new OptionsBuilder().build();
-
         OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
         String generatedStepDefs = response.getResponse();
 
         saveToFile("src/temp/java/stepDefinitions/LoginSteps.java", generatedStepDefs);
     }
 
+    public static void generatePageObjectModel() throws OllamaBaseException, IOException, InterruptedException {
+        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
+        ollamaAPI.setRequestTimeoutSeconds(60);
+
+        String prompt = new PromptBuilder()
+                .addLine("Generate a Selenium Page Object Model (POM) for automating login functionality.")
+                .build();
+
+        Options options = new OptionsBuilder().build();
+        OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
+        String generatedPageObject = response.getResponse();
+
+        saveToFile("src/temp/java/pages/LoginPage.java", generatedPageObject);
+    }
+
     private static void saveToFile(String filePath, String content) {
         try {
-            // Remove markdown-style code formatting (```java and ```)
-            content = content.replaceAll("```java", "").replaceAll("```", "").trim();
-
             File file = new File(filePath);
             file.getParentFile().mkdirs();
             try (FileWriter writer = new FileWriter(file)) {
