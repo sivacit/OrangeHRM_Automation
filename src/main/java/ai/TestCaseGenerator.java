@@ -17,27 +17,28 @@ public class TestCaseGenerator {
     private static final String OLLAMA_HOST = "http://localhost:11434/";
     private static final String MODEL = "mistral"; // Use 'gemma' if needed
     private static String basePromptDirectory;
-
+    private static Options options = new OptionsBuilder().build();
+    
     static {
         basePromptDirectory = FileUtils.loadConfig();
     }
 
     public static void main(String[] args) {  
         try {
-            genFetureFiles();           
+            OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
+            ollamaAPI.setRequestTimeoutSeconds(600);
+
+            genFetureFiles(ollamaAPI);           
         } catch (OllamaBaseException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }    
 
-    public static void genFetureFiles() throws OllamaBaseException, IOException, InterruptedException{
+    public static void genFetureFiles(OllamaAPI ollamaAPI) throws OllamaBaseException, IOException, InterruptedException{
         String feature_file = basePromptDirectory + "/features/";            
         File folder = new File(feature_file);
-        // List all files in the directory
-        File[] files = folder.listFiles();
 
-        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
-        ollamaAPI.setRequestTimeoutSeconds(600);
+        File[] files = folder.listFiles();       
 
         if (files != null) {
             for (File file : files) {                
@@ -45,9 +46,12 @@ public class TestCaseGenerator {
                     System.out.println("Processing file: " + file.getName());
                     String  featureOutputFile = "src/temp/resources/features/" + FileUtils.toCamelCase(file.getName());                        
                     String  stepOutputFile = "src/temp/java/steps/" + FileUtils.replaceExtension(FileUtils.toCamelCase(file.getName()), "java");       
-                    generateFeatureFile(feature_file + file.getName(), featureOutputFile);
+                    String featurePrompt = FileUtils.readFromFile(feature_file + file.getName());
+                    generatePromptResponse(ollamaAPI, featurePrompt, featureOutputFile);
+                    
+                    // Generating Step Definition Java file
                     String stepPrompt = PromptGenerator.getStepPrompt(featureOutputFile, featureOutputFile);
-                    generateStepDefinitionsNew(stepPrompt, stepOutputFile);
+                    generatePromptResponse(ollamaAPI, stepPrompt, stepOutputFile);
                 }
             }
         } else {
@@ -55,60 +59,14 @@ public class TestCaseGenerator {
         }        
     }
 
-    public static void generateFeatureFile(String promptFilePath, String outputFilePath) 
-            throws OllamaBaseException, IOException, InterruptedException {
-        String prompt = readFromFile(promptFilePath);
-        if (prompt == null || prompt.isEmpty()) {
-            System.err.println("Feature prompt file is empty or missing.");
-            return;
-        }
-
-        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
-        ollamaAPI.setRequestTimeoutSeconds(600);
-        
-        Options options = new OptionsBuilder().build();
-        OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
-        saveToFile(outputFilePath, response.getResponse());
+    public static void generatePromptResponse(OllamaAPI ollamaAPI, String prompt, String outputFilePath) 
+        throws OllamaBaseException, IOException, InterruptedException {            
+    if (prompt == null || prompt.isEmpty()) {
+        System.err.println("Input prompt is empty or missing.");
+        return;
     }
-
-    public static void generateStepDefinitionsNew(String prompt, String outputFilePath) 
-            throws OllamaBaseException, IOException, InterruptedException {
-        if (prompt == null || prompt.isEmpty()) {
-            System.err.println("Step definition prompt file is empty or missing.");
-            return;
-        }
-
-        OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
-        ollamaAPI.setRequestTimeoutSeconds(600);
-
-        Options options = new OptionsBuilder().build();
-        OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
-        saveToFile(outputFilePath, response.getResponse());
-    }
-
-    private static String readFromFile(String filePath) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + filePath);
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static void saveToFile(String filePath, String content) {
-        try {
-            // Remove markdown-style code formatting (```java and ```)
-            content = content.replaceAll("```java", "").replaceAll("```", "").trim();
-
-            File file = new File(filePath);
-            file.getParentFile().mkdirs();
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write(content);
-            }
-            System.out.println("File generated: " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    
+    OllamaResult response = ollamaAPI.generate(MODEL, prompt, false, options);
+    FileUtils.saveToFile(outputFilePath, response.getResponse());
     }
 }

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
+import java.io.FileWriter;
 
 public class FileUtils {
     public static String replaceExtension(String filePath, String newExtension) {
@@ -51,6 +51,16 @@ public class FileUtils {
         return content.toString();
     }
 
+    public static String readFromFile(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + filePath);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static String loadConfig() {
         Properties properties = new Properties();
         String basePromptDirectory = "";
@@ -63,5 +73,21 @@ public class FileUtils {
             basePromptDirectory = "src/main/resources/prompt";
         }
         return basePromptDirectory;
+    }
+
+    public static void saveToFile(String filePath, String content) {
+        try {
+            // Remove markdown-style code formatting (```java and ```)
+            content = content.replaceAll("```java", "").replaceAll("```", "").trim();
+
+            File file = new File(filePath);
+            file.getParentFile().mkdirs();
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(content);
+            }
+            System.out.println("File generated: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

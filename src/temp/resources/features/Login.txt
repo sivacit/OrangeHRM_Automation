@@ -1,6 +1,6 @@
-Feature: Login Functionality on OrangeHRM Website
+Feature: Login Functionality for OrangeHRM Website
 
-  Scenario: Successful login to the dashboard
+  Scenario: Successful login with valid credentials
     Given I am on the login page
     When I enter "admin" as username and "admin123" as password
     And I click the login button
@@ -8,6 +8,6 @@ Feature: Login Functionality on OrangeHRM Website
 
   Scenario: Invalid login with incorrect credentials
     Given I am on the login page
-    When I enter invalid username and invalid password
+    When I enter an invalid username and password
     And I click the login button
-    Then an error message should appear indicating invalid credentials
+    Then an error message should appear
