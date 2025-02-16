@@ -1,0 +1,19 @@
+gherkin
+Feature: Login Functionality of OrangeHRM
+  In order to access the dashboard
+  As a user
+  I want to log in with valid credentials
+
+Scenario: Successful login with admin username and password
+  Given I navigate to the login page at "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+  When I input "admin" as username
+      And I input "admin123" as password
+      And I click on the 'Login' button
+  Then I should be redirected to the dashboard page
+
+Scenario: Invalid login with incorrect credentials
+  Given I navigate to the login page at "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
+  When I input an invalid username
+      And I input an invalid password
+      And I click on the 'Login' button
+  Then an error message should appear

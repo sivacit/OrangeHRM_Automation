@@ -90,4 +90,26 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
+    
+    public static String getStepFileName(String fileName) {
+    	String originalFileName = fileName; // Example: "Login.txt"
+    	String camelCaseFileName = FileUtils.toCamelCase(originalFileName); // Converts "Login.txt" -> "LoginTxt"
+
+    	// Extract the base name without extension
+    	String baseName = camelCaseFileName.substring(0, camelCaseFileName.lastIndexOf('.')); // "Login"
+    	String extension = camelCaseFileName.substring(camelCaseFileName.lastIndexOf('.'));   // ".txt"
+
+    	// Append "Step" before the extension
+    	String fileNameWithSteps = baseName + "Steps" + extension; // "LoginStep.txt"
+
+    	// Build the final path
+    	StringBuilder stepOutputFile = new StringBuilder();
+    	stepOutputFile.append("src/test/java/steps/").append(fileNameWithSteps);
+
+    	String stepOutputPath = stepOutputFile.toString(); // Convert StringBuilder to String
+        stepOutputPath = replaceExtension(stepOutputPath, "java");
+    	System.out.println(stepOutputPath);
+    	return stepOutputPath;
+
+    }
 }

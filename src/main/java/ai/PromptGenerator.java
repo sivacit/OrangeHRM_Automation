@@ -5,10 +5,11 @@ import java.io.IOException;
 import utils.FileUtils;
 
 public class PromptGenerator {
-    public static String getStepPrompt(String featureFilePath, String stepOutputFile) throws IOException  {
+    public static String getStepPrompt(String featureFilePath, String stepOutputFile, String className) throws IOException  {
         String str3 = FileUtils.readFileToString(featureFilePath);        
         StringBuilder sb = new StringBuilder();
         sb.append("Generate a Java Step Definition file for the following Cucumber BDD feature file:\n");
+        sb.append("Java className should be: " + className + "\n" );        
         sb.append(str3).append("\n\n"); // File content
         sb.append("Requirements:\n");
         sb.append("Use Selenium WebDriver to interact with the browser.\n");
