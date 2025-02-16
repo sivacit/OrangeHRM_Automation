@@ -33,3 +33,4 @@ target/
 .settings/
 .vscode/
 src/temp
+allure-results
