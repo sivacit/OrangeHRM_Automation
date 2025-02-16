@@ -42,7 +42,7 @@ public class TestCaseGenerator {
                 if (file.isFile()) {
                     System.out.println("Processing file: " + file.getName());
                     String  featureOutputFile = "src/test/resources/features/" + FileUtils.toCamelCase(file.getName());                        
-                    String  stepOutputFile = "src/test/java/steps/" + FileUtils.replaceExtension(FileUtils.toCamelCase(file.getName()) + "Steps", "java");       
+                    String  stepOutputFile = "src/test/java/steps/" + FileUtils.replaceExtension(FileUtils.toCamelCase(file.getName()+ "Steps") , "java");       
                         String featurePrompt = FileUtils.readFromFile(feature_file + file.getName());
                     generatePromptResponse(ollamaAPI, featurePrompt, featureOutputFile);
                     
