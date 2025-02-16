@@ -7,44 +7,42 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
-
 public class LoginPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    // Locators optimized for Chrome
-    private By usernameField = By.xpath("//input[@name='username' or @id='txtUsername']");
-    private By passwordField = By.xpath("//input[@name='password' or @id='txtPassword']");
-    private By loginButton = By.xpath("//button[@type='submit' or contains(text(),'Login')]");
-
-    // Constructor
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15)); // Increased wait time
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
-    // Enter username
+    By usernameField = By.name("username");
+    By passwordField = By.name("password");
+    By loginButton = By.xpath("//button[@type='submit']");
+
     public void enterUsername(String username) {
-        WebElement usernameElement = wait.until(ExpectedConditions.presenceOfElementLocated(usernameField));
-        usernameElement.clear(); // Clear the field before typing
-        usernameElement.sendKeys(username);
+        clearInputField(usernameField);
+        wait.until(ExpectedConditions.visibilityOf(findInputField(usernameField))).sendKeys(username);
     }
 
-    // Enter password
     public void enterPassword(String password) {
-        WebElement passwordElement = wait.until(ExpectedConditions.presenceOfElementLocated(passwordField));
-        passwordElement.clear(); // Clear the field before typing
-        passwordElement.sendKeys(password);
+        clearInputField(passwordField);
+        wait.until(ExpectedConditions.visibilityOf(findInputField(passwordField))).sendKeys(password);
     }
 
-    // Click login button
     public void clickLogin() {
-        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
-        loginBtn.click();
+        wait.until(ExpectedConditions.elementToBeClickable(loginButton)).click();
     }
 
-    // Verify login success (Optional)
     public boolean isLoginSuccessful() {
-        return wait.until(ExpectedConditions.urlContains("dashboard")); // Modify this based on the expected page
+        return driver.getCurrentUrl().contains("dashboard");
+    }
+
+    private WebElement findInputField(By by) {
+        return driver.findElement(by);
+    }
+
+    private void clearInputField(By by) {
+        wait.until(ExpectedConditions.visibilityOf(findInputField(by))).clear();
     }
 }

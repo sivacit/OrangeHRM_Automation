@@ -91,7 +91,7 @@ public class FileUtils {
         }
     }
     
-    public static String getStepFileName(String fileName) {
+    public static String getFileNameWithType(String fileName, String outputPath, String type) {
     	String originalFileName = fileName; // Example: "Login.txt"
     	String camelCaseFileName = FileUtils.toCamelCase(originalFileName); // Converts "Login.txt" -> "LoginTxt"
 
@@ -100,11 +100,11 @@ public class FileUtils {
     	String extension = camelCaseFileName.substring(camelCaseFileName.lastIndexOf('.'));   // ".txt"
 
     	// Append "Step" before the extension
-    	String fileNameWithSteps = baseName + "Steps" + extension; // "LoginStep.txt"
+    	String fileNameWithSteps = baseName + type + extension; // "LoginStep.txt"
 
     	// Build the final path
     	StringBuilder stepOutputFile = new StringBuilder();
-    	stepOutputFile.append("src/test/java/steps/").append(fileNameWithSteps);
+    	stepOutputFile.append(outputPath).append(fileNameWithSteps);
 
     	String stepOutputPath = stepOutputFile.toString(); // Convert StringBuilder to String
         stepOutputPath = replaceExtension(stepOutputPath, "java");
