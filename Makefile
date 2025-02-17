@@ -17,7 +17,6 @@ clean:
 generate: clean
 	@echo "Using JAVA_HOME: $(JAVA_HOME)"
 	@$(MVN) compile exec:java -Dexec.mainClass="ai.TestCaseGenerator"
-
 # Build and install the project
 install: clean
 	@$(MVN) clean install
@@ -30,4 +29,6 @@ test: clean
 build_and_test: clean
 	@$(MVN) clean install test
 
+test-class: 
+	@$(MVN) compile exec:java -Dexec.mainClass="ai.Test"
 .PHONY: all clean install generate test build_and_test       

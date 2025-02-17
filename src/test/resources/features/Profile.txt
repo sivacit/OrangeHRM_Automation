@@ -1,0 +1,24 @@
+Feature: Profile Update on OrangeHRM
+     As a user, I want to be able to update my profile information.
+
+     Scenario: Successful Profile Update
+       Given I am logged in the website "https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPersonalDetails/empNumber/7"
+       And the current first name is "John"
+       And the current middle name is "A."
+       And the current last name is "Doe"
+       When I update the first name to "Jane"
+           And I update the middle name to "B."
+           And I update the last name to "Smith"
+           And I click on the Save button
+       Then the updated first name should be "Jane"
+           And the updated middle name should be "B."
+           And the updated last name should be "Smith"
+
+     Scenario: Incomplete Profile Update
+       Given I am logged in the website "https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPersonalDetails/empNumber/7"
+       And the current first name is "John"
+       And the current middle name is "A."
+       And the current last name is "Doe"
+       When I update only the first name to a blank value
+           And I click on the Save button
+       Then an error message should appear saying "First Name cannot be empty"

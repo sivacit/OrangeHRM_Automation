@@ -110,6 +110,11 @@ public class FileUtils {
         stepOutputPath = replaceExtension(stepOutputPath, "java");
     	System.out.println(stepOutputPath);
     	return stepOutputPath;
+    }
 
+    public static String getPOMFile(String fileName) {
+        String str = FileUtils.getFileNameWithType("profile.txt", "src/main/java/pages/", "Page");		
+        return readFromFile(str);
+		
     }
 }
