@@ -1,24 +1,26 @@
-Feature: Profile Update on OrangeHRM
-     As a user, I want to be able to update my profile information.
+Feature: Profile Update on OrangeHRM Website
 
-     Scenario: Successful Profile Update
-       Given I am logged in the website "https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPersonalDetails/empNumber/7"
-       And the current first name is "John"
-       And the current middle name is "A."
-       And the current last name is "Doe"
-       When I update the first name to "Jane"
-           And I update the middle name to "B."
-           And I update the last name to "Smith"
-           And I click on the Save button
-       Then the updated first name should be "Jane"
-           And the updated middle name should be "B."
-           And the updated last name should be "Smith"
+  Scenario: Successful profile update
+    Given I am logged in to the OrangeHRM website
+    And I navigate to my personal details page
+    And I have the following details:
+      | First Name | John |
+      | Middle Name | D. |
+      | Last Name | Doe |
+    When I enter "NewFirstName" into the first name field
+    And I enter "NewMiddleName" into the middle name field
+    And I enter "NewLastName" into the last name field
+    And I click the "Save Personal Details" button
+    Then I should see a success message
+    And my personal details should be updated to:
+      | First Name | NewFirstName |
+      | Middle Name | NewMiddleName |
+      | Last Name | NewLastName |
 
-     Scenario: Incomplete Profile Update
-       Given I am logged in the website "https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPersonalDetails/empNumber/7"
-       And the current first name is "John"
-       And the current middle name is "A."
-       And the current last name is "Doe"
-       When I update only the first name to a blank value
-           And I click on the Save button
-       Then an error message should appear saying "First Name cannot be empty"
+  Scenario: Invalid profile update - missing required field
+    Given I am logged in to the OrangeHRM website
+    And I navigate to my personal details page
+    When I leave the first name field empty
+    And I click the "Save Personal Details" button
+    Then I should see an error message for the first name field
+    And my personal details should not be updated

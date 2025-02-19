@@ -30,14 +30,14 @@
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
-        <version>4.17.0</version>
+        <version>4.10.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
     <dependency>
         <groupId>io.github.bonigarcia</groupId>
         <artifactId>webdrivermanager</artifactId>
-        <version>5.5.3</version>
+        <version>5.6.0</version>
     </dependency>    
     <dependency>
         <groupId>com.aventstack</groupId>
@@ -55,21 +55,15 @@
     <dependency>
         <groupId>io.cucumber</groupId>
         <artifactId>cucumber-java</artifactId>
-        <version>4.8.1</version>
+        <version>7.14.0</version>
         <scope>test</scope>
     </dependency>         
     <dependency>
         <groupId>io.cucumber</groupId>
         <artifactId>cucumber-junit</artifactId>
-        <version>4.8.1</version>
+        <version>7.14.0</version>
         <scope>test</scope>
-    </dependency>     
-    <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-junit</artifactId>
-        <version>4.8.1</version>
-        <scope>compile</scope>
-    </dependency>
+    </dependency>         
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -80,7 +74,7 @@
     <dependency>
         <groupId>io.cucumber</groupId>
         <artifactId>cucumber-testng</artifactId>
-        <version>7.15.0</version>
+        <version>7.14.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
@@ -169,7 +163,7 @@
                 <dependency>
                     <groupId>org.testng</groupId>
                     <artifactId>testng</artifactId>
-                    <version>7.9.0</version>
+                    <version>7.8.0</version>
                 </dependency>
             </dependencies>
         </plugin>

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Properties;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -66,8 +67,7 @@ public class FileUtils {
         String basePromptDirectory = "";
         try (InputStream input = Files.newInputStream(Paths.get("src/main/resources/config.properties"))) {
             properties.load(input);
-            basePromptDirectory = properties.getProperty("prompt.base.directory");
-            System.out.println("Loaded prompt directory: " + basePromptDirectory);
+            basePromptDirectory = properties.getProperty("prompt.base.directory");           
         } catch (IOException e) {
             System.err.println("Failed to load config file. Using default path.");
             basePromptDirectory = "src/main/resources/prompt";
@@ -85,7 +85,6 @@ public class FileUtils {
             try (FileWriter writer = new FileWriter(file)) {
                 writer.write(content);
             }
-            System.out.println("File generated: " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,13 +107,22 @@ public class FileUtils {
 
     	String stepOutputPath = stepOutputFile.toString(); // Convert StringBuilder to String
         stepOutputPath = replaceExtension(stepOutputPath, "java");
-    	System.out.println(stepOutputPath);
     	return stepOutputPath;
     }
 
     public static String getPOMFile(String fileName) {
-        String str = FileUtils.getFileNameWithType("profile.txt", "src/main/java/pages/", "Page");		
-        return readFromFile(str);
-		
+        String str = FileUtils.getFileNameWithType(fileName, "src/main/java/pages/", "Page");		
+        return readFromFile(str);		
+    }
+
+    public static String readAndReplaceMarkdown(String filePath, Map<String, String> placeholders) throws IOException {
+        // Read the markdown file content
+        String content = new String(Files.readAllBytes(Paths.get(filePath)));
+        // Replace placeholders
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            content = content.replace("${" + entry.getKey() + "}", entry.getValue());
+        }
+
+        return content;
     }
 }

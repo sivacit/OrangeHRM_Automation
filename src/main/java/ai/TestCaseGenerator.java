@@ -11,11 +11,11 @@ import java.io.IOException;
 import utils.FileUtils;
 
 public class TestCaseGenerator {
+    private static boolean PROD_MODE = true;
     private static final String OLLAMA_HOST = "http://localhost:11434/";
     private static final String MODEL = "mistral"; // Use 'gemma' if needed
     private static String basePromptDirectory;
     private static Options options = new OptionsBuilder().build();
-    private static boolean PROD_MODE = true;
     
     static {
         basePromptDirectory = FileUtils.loadConfig();
@@ -26,8 +26,8 @@ public class TestCaseGenerator {
             OllamaAPI ollamaAPI = new OllamaAPI(OLLAMA_HOST);
             ollamaAPI.setRequestTimeoutSeconds(600);
 
-            // genPOMFiles(ollamaAPI);
-            genFetureFiles(ollamaAPI);           
+            genPOMFiles(ollamaAPI);
+            // genFetureFiles(ollamaAPI);           
         } catch (OllamaBaseException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -43,17 +43,14 @@ public class TestCaseGenerator {
             for (File file : files) {                
                 if (file.isFile()) {
                     System.out.println("Processing file: " + file.getName());
-                    String  featureOutputFile = "src/test/resources/features/" + FileUtils.toCamelCase(file.getName());                        
-                    System.out.println("Before append ::>" + FileUtils.toCamelCase(file.getName()));
-                    
+                    String  featureOutputFile = "src/test/resources/features/" + FileUtils.toCamelCase(file.getName());                                            
                     String featurePrompt = FileUtils.readFromFile(feature_file + file.getName());
                     generatePromptResponse(ollamaAPI, featurePrompt, featureOutputFile);
                     
                     // Generating Step Definition Java file
                     getStepPrompt(ollamaAPI, file, featureOutputFile);
                     getTestPrompt(ollamaAPI, file);
-
-
+                    Thread.sleep(1000);                    
                 }
             }
         } else {
@@ -71,36 +68,35 @@ public class TestCaseGenerator {
     }
 
     private static void getTestPrompt(OllamaAPI ollamaAPI, File file) throws OllamaBaseException, IOException, InterruptedException{
-
         String pomFileContent = FileUtils.getPOMFile(file.getName());
-        String className  = FileUtils.replaceExtension(file.getName(), "java");
-        String prompt = PromptGenerator.getTestCaseClassPrompt(pomFileContent, className);
+        String className  = FileUtils.toCamelCase(FileUtils.replaceExtension(file.getName(), ""));
+        String prompt = PromptGenerator.getTestCaseClassPromptNew(pomFileContent, className);
         String writeFile = FileUtils.getFileNameWithType(file.getName(),"src/test/java/testCases/", "Test");
         generatePromptResponse(ollamaAPI, prompt, writeFile);
-
-
-
     }
 
-    // public static void genPOMFiles(OllamaAPI ollamaAPI) throws OllamaBaseException, IOException, InterruptedException{
-    //     String page_file = basePromptDirectory + "/pages/";            
-    //     File folder = new File(page_file);
+    public static void genPOMFiles(OllamaAPI ollamaAPI) throws OllamaBaseException, IOException, InterruptedException{
+        String page_file = basePromptDirectory + "/pages/";            
+        File folder = new File(page_file);
 
-    //     File[] files = folder.listFiles();       
+        File[] files = folder.listFiles();       
 
-    //     if (files != null) {
-    //         for (File file : files) {                
-    //             if (file.isFile()) {
-    //                 System.out.println("Processing file: " + file.getName());
-    //                 String  pageFile = "src/temp/java/pages/" + FileUtils.toCamelCase(file.getName());                                                                
-    //                 String featurePrompt = FileUtils.readFromFile(page_file + file.getName());
-    //                    generatePromptResponse(ollamaAPI, featurePrompt, pageFile);
-    //             }
-    //         }
-    //     } else {
-    //         System.out.println("Folder is empty or does not exist.");
-    //     }        
-    // }
+        if (files != null) {
+            for (File file : files) {                
+                if (file.isFile()) {
+                    System.out.println("Processing file: " + file.getName());
+                    String  pageFile = "src/temp/java/pages/" + FileUtils.toCamelCase(file.getName());   
+                    System.out.println(pageFile);                                                             
+                    String promptTemplate = FileUtils.readFileToString(page_file + file.getName());
+                    String className  = FileUtils.toCamelCase(FileUtils.replaceExtension(file.getName(), ""));
+                    String prompt = PromptGenerator.getTestCaseClassPromptNew(promptTemplate, className);
+                    generatePromptResponse(ollamaAPI, prompt, pageFile);
+                }
+            }
+        } else {
+            System.out.println("Folder is empty or does not exist.");
+        }        
+    }
 
 
     public static void generatePromptResponse(OllamaAPI ollamaAPI, String prompt, String outputFilePath) 
