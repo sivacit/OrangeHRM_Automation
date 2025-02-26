@@ -14,7 +14,7 @@ public class LoginTest extends BaseTest {
         loginPage = new LoginPage(driver);  // ✅ Initialize loginPage instance
         String username = properties.getProperty("login.username");
         String password = properties.getProperty("login.password");
-
+        
         loginPage.enterUsername(username);
         loginPage.enterPassword(password);
         loginPage.clickLogin();

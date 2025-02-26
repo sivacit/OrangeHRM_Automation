@@ -27,13 +27,30 @@ public class DriverManager {
     public static WebDriver getDriver() {
         if (driver == null) {
             loadProperties();
-            String chromeDriverPath = properties.getProperty("chrome.driver.path");
+            System.setProperty("webdriver.chrome.driver", "C:\\programs\\chromedriver.exe");
+            driver = new ChromeDriver();
+            // driver.get(url);
+            driver.manage().window().maximize();
 
-            System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+            // System.setProperty("webdriver.chrome.driver", "C:\\programs\\chromedriver.exe"); 
+            // driver = new ChromeDriver();
+            // driver.get(url);
+            // driver.manage().window().maximize();
+            
+            // WebDriver driver = new ChromeDriver(options);
 
-            ChromeOptions options = new ChromeOptions();
-            driver = new ChromeDriver(options);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+            // // ChromeOptions options = new ChromeOptions();
+            // ChromeOptions options = new ChromeOptions();
+            // options.addArguments("--headless");
+            // options.addArguments("--disable-gpu");
+            // options.addArguments("--no-sandbox"); // Use this option to avoid issues with Chrome on Linux/Windows
+            // options.addArguments("--remote-debugging-port=65483"); // Use a fixed debugging port
+            // options.addArguments("start-maximized"); // Start maximized for better compatibility
+
+            // WebDriver driver = new ChromeDriver(options);
+            // driver = new ChromeDriver(options);
+            // driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         }
         return driver;
     }
