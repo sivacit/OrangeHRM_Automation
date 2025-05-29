@@ -1,0 +1,26 @@
+Feature: Profile Update on OrangeHRM Website
+
+  Scenario: Successful profile update
+    Given I am logged in to the OrangeHRM website
+    And I navigate to my personal details page
+    And I have the following details:
+      | First Name | John |
+      | Middle Name | D. |
+      | Last Name | Doe |
+    When I enter "NewFirstName" into the first name field
+    And I enter "NewMiddleName" into the middle name field
+    And I enter "NewLastName" into the last name field
+    And I click the "Save Personal Details" button
+    Then I should see a success message
+    And my personal details should be updated to:
+      | First Name | NewFirstName |
+      | Middle Name | NewMiddleName |
+      | Last Name | NewLastName |
+
+  Scenario: Invalid profile update - missing required field
+    Given I am logged in to the OrangeHRM website
+    And I navigate to my personal details page
+    When I leave the first name field empty
+    And I click the "Save Personal Details" button
+    Then I should see an error message for the first name field
+    And my personal details should not be updated
