@@ -1,8 +1,0 @@
-Write a Cucumber BDD feature file for updating the profile on the website:
-https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewPersonalDetails/empNumber/7.
-
-The feature file should include:
-
-A successful profile update scenario where the user updates the first name, middle name, and last name, then saves the changes.
-A scenario where the user tries to update the profile but leaves a required field empty, verifying an error message appears.
-Use standard Gherkin syntax with Feature, Scenario, Given, When, And, Then steps. Do not include explanations, implementation details, or any text outside the feature file itself.
