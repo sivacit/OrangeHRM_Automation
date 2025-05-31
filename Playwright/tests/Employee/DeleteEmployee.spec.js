@@ -13,9 +13,9 @@ test('test', async ({ page }) => {
 
   await page.getByRole('textbox', { name: 'Type for hints...' }).first().click();
 
-  await page.getByRole('textbox', { name: 'Type for hints...' }).first().fill('baiondata user');
+  await page.getByRole('textbox', { name: 'Type for hints...' }).first().fill('baiondata solutions Users');
 
-  await page.getByText('baiondata User', { exact: true }).click();
+  await page.getByText('baiondata solutions Users', { exact: true }).click();
 
   await page.getByRole('button', { name: 'Search' }).click();
 

@@ -13,13 +13,11 @@ test('test', async ({ page }) => {
 
   await page.getByRole('textbox', { name: 'Type for hints...' }).first().click();
 
-  await page.getByRole('textbox', { name: 'Type for hints...' }).first().fill('baiondata solution user');
-
-  await page.getByText('baiondata solution User').click();
+  await page.getByRole('textbox', { name: 'Type for hints...' }).first().fill('baiondata user');
 
   await page.getByRole('button', { name: 'Search' }).click();
 
-  await page.getByRole('row', { name: ' 0381 baiondata solution' }).click();
+  await page.getByRole('row', { name: ' 0381 baiondata user' }).click();
 
   await page.getByRole('textbox', { name: 'Middle Name' }).click();
 
