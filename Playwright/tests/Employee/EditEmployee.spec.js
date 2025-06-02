@@ -17,7 +17,7 @@ test('test', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Search' }).click();
 
-  await page.getByRole('row', { name: ' 0381 baiondata user' }).click();
+  await page.getByRole('row', { name: ' 1505 baiondata user' }).click();
 
   await page.getByRole('textbox', { name: 'Middle Name' }).click();
 
