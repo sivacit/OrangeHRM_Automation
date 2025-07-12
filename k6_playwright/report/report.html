@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>k6 Test Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>k6 Test Summary</h1>
+  <pre id="summary">Loading...</pre>
+
+  <script>
+    fetch('report.txt')
+      .then(res => res.text())
+      .then(text => {
+        document.getElementById('summary').textContent = text;
+      });
+  </script>
+</body>
+</html>

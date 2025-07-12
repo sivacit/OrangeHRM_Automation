@@ -1,0 +1,24 @@
+{
+  "name": "k6_playwright",
+  "version": "1.0.0",
+  "description": "Login with Playwright and test performance with k6",
+  "main": "index.js",
+  "scripts": {
+    "login": "node playwright/login-form-submit.js",
+    "add-employee": "node playwright/add-employee.js",
+    "edit-employee": "node playwright/edit-employee.js",
+    "test": "k6 run --summary-export=k6/results.json --out json=k6/results.json k6/test-form-load.js",
+    "test-add": "k6 run --summary-export=k6/results-add.json --out json=k6/results-add.json k6/test-add-employee.js",
+    "test-edit": "k6 run --summary-export=k6/results-edit.json --out json=k6/results-edit.json k6/test-edit-employee.js",
+    "report": "python3 -m http.server 8080",
+    "serve": "xdg-open report/dashboard.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.53.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.2"
+  }
+}

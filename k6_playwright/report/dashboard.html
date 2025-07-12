@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>k6 Performance Test Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #f5f5f5; }
+    h1 { color: #333; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 20px; }
+    .card {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      flex: 1 1 300px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>🔥 k6 Performance Test Dashboard</h1>
+  <div class="metrics" id="metrics"></div>
+  <canvas id="durationChart" width="800" height="400"></canvas>
+
+  <script>
+    const data = {
+      "root_group": {
+        "groups": {},
+        "checks": {
+          "is status 200": {
+            "name": "is status 200",
+            "path": "::is status 200",
+            "id": "548d37ca5f33793206f7832e7cea54fb",
+            "passes": 325,
+            "fails": 0
+          },
+          "dashboard loaded": {
+            "name": "dashboard loaded",
+            "path": "::dashboard loaded",
+            "id": "05ac5474aef65cce4bd5c2ef7208d6ed",
+            "passes": 325,
+            "fails": 0
+          }
+        },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "metrics": {
+        "http_req_blocked": {
+          "avg": 28.81,
+          "min": 0.0037,
+          "max": 1176.06,
+          "p(90)": 0.0188,
+          "p(95)": 0.0299
+        },
+        "http_req_duration": {
+          "avg": 594.20,
+          "min": 363.07,
+          "max": 5428.96,
+          "p(90)": 694.15,
+          "p(95)": 924.05
+        },
+        "http_req_failed": {
+          "value": 0
+        },
+        "iterations": {
+          "count": 325,
+          "rate": 15.86
+        },
+        "http_reqs": {
+          "count": 325,
+          "rate": 15.86
+        },
+        "checks": {
+          "passes": 650,
+          "fails": 0,
+          "value": 1
+        },
+        "vus": {
+          "value": 10,
+          "min": 10,
+          "max": 10
+        },
+        "vus_max": {
+          "value": 10,
+          "min": 10,
+          "max": 10
+        },
+        "data_received": {
+          "count": 2725191,
+          "rate": 133055.92
+        },
+        "data_sent": {
+          "count": 64160,
+          "rate": 3132.57
+        },
+        "iteration_duration": {
+          "avg": 623.46,
+          "min": 363.47,
+          "max": 6349.30,
+          "p(90)": 725.92,
+          "p(95)": 1295.11
+        }
+      }
+    };
+
+    const metricsEl = document.getElementById('metrics');
+    const metrics = data.metrics;
+
+    const cards = [
+      ['Iterations', metrics.iterations.count],
+      ['Checks Passed', metrics.checks.passes],
+      ['Checks Failed', metrics.checks.fails],
+      ['HTTP Requests', metrics.http_reqs.count],
+      ['Data Received (MB)', (metrics.data_received.count / (1024 * 1024)).toFixed(2)],
+      ['Data Sent (KB)', (metrics.data_sent.count / 1024).toFixed(2)],
+      ['Avg Duration (ms)', metrics.http_req_duration.avg.toFixed(2)],
+      ['p90 Duration (ms)', metrics.http_req_duration['p(90)'].toFixed(2)],
+      ['p95 Duration (ms)', metrics.http_req_duration['p(95)'].toFixed(2)],
+      ['Max Duration (ms)', metrics.http_req_duration.max.toFixed(2)],
+      ['VUs Max', metrics.vus_max.value]
+    ];
+
+    cards.forEach(([label, value]) => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `<strong>${label}:</strong><br><span style="font-size: 20px;">${value}</span>`;
+      metricsEl.appendChild(div);
+    });
+
+    const ctx = document.getElementById('durationChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['min', 'avg', 'p90', 'p95', 'max'],
+        datasets: [{
+          label: 'HTTP Request Duration (ms)',
+          data: [
+            metrics.http_req_duration.min,
+            metrics.http_req_duration.avg,
+            metrics.http_req_duration['p(90)'],
+            metrics.http_req_duration['p(95)'],
+            metrics.http_req_duration.max
+          ],
+          backgroundColor: '#42a5f5'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
